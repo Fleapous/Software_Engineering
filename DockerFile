@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Set the working directory in the container
-WORKDIR /Software_Engineering
+WORKDIR /code
 
 # Install system dependencies
 RUN apt-get update && \
@@ -20,7 +20,7 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 # Copy the current directory contents into the container at /code/
-COPY . .
+COPY . /code/
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
