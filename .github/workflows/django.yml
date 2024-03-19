@@ -29,6 +29,5 @@ jobs:
           with:
             image: akhilajith2/software_engineering
             registry: docker.io
-            dockerfile: DockerFile
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
