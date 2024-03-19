@@ -1,29 +1,12 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12
+FROM node:latest
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+WORKDIR /usr/src/app
 
-# Set the working directory in the container
-WORKDIR /client
+COPY package.json ./
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN npm install
 
-# Install Python dependencies
-COPY requirements.txt /code/
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-# Copy the current directory contents into the container at /code/
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Run the Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 8000
+CMD [ "node", "index.js" ]
