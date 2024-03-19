@@ -1,29 +1,40 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12
+# Use the official Python image for Windows Server Core
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
 # Set the working directory in the container
-WORKDIR /code
+WORKDIR /app
+
+# Install Python and pip
+RUN powershell -Command \
+    $ErrorActionPreference = 'Stop'; \
+    $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe" -OutFile "python-3.9.7-amd64.exe" ; \
+    Start-Process python-3.9.7-amd64.exe -ArgumentList '/quiet', 'InstallAllUsers=1', 'PrependPath=1' -Wait ; \
+    Remove-Item python-3.9.7-amd64.exe ; \
+    Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile "get-pip.py" ; \
+    python get-pip.py ; \
+    Remove-Item get-pip.py
 
 # Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN powershell -Command \
+    $ErrorActionPreference = 'Stop'; \
+    $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -Uri "https://www.microsoft.com/en-us/download/confirmation.aspx?id=21844" -OutFile "VC_redist.x64.exe" ; \
+    Start-Process VC_redist.x64.exe -ArgumentList '/install', '/quiet' -Wait ; \
+    Remove-Item VC_redist.x64.exe
+
+# Copy the current directory contents into the container at /app/
+COPY . .
 
 # Install Python dependencies
-COPY requirements.txt /code/
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /code/
-COPY . /code/
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Expose port 8000 to the outside world
+EXPOSE 8000
 
 # Run the Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
