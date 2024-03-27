@@ -1,5 +1,6 @@
 from django.db import models
-from rent_space.user_management.models import User
+
+from user_management.models import User
 
 
 class AdSpace(models.Model):
@@ -7,8 +8,8 @@ class AdSpace(models.Model):
     size = models.FloatField()
     price = models.FloatField()
     availability = models.BooleanField()
-    photos = models.ImageField(upload_to='')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spaces_owned')
+    photos = models.ImageField(upload_to='', null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spaces_owned', null=True, blank=True)
 
     def checkAvailability(self):
         pass
@@ -47,10 +48,10 @@ class Rating(models.Model):
 
 
 class Payment(models.Model):
-    client = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount = models.FloatField
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_payments')
+    amount = models.FloatField()
     paymentStatus = models.BooleanField()
-    spaceOwnerId = models.ForeignKey(User, on_delete=models.CASCADE)
+    spaceOwnerId = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_payments')
 
     def processPayment(self):
         pass

@@ -1,0 +1,87 @@
+{
+	"info": {
+		"_postman_id": "77fb5277-541d-4981-8182-9f47111f5839",
+		"name": "SoftEng2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33776969"
+	},
+	"item": [
+		{
+			"name": "getAllAdSpaces",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "CreateAdSpace",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"location\": \"Example Location\",\n    \"size\": 100.0,\n    \"price\": 50.0,\n    \"availability\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/create-adspace/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"create-adspace",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAdSpaceById",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "editAdSpaceById",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAdSpaceById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/adspace/2/delete/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"adspace",
+						"2",
+						"delete",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
