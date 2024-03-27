@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'testApi',
+    'user_management',
+    'space_booking'
 ]
 
 MIDDLEWARE = [
