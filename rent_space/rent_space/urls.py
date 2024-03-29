@@ -21,4 +21,5 @@ from django.urls import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('space_booking.urls')),  # Include the URLs of your app
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
