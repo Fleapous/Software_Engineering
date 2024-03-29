@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Button, TextField, Grid, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LoginStore from '../../api/LoginStore';
-
+import Navbar from '../../components/navbar/Navbar';
 const LeftSideImage = styled.img`
   width: 100%;
   height: 100%;
@@ -138,14 +138,14 @@ const Login = () => {
 
   return (
     <Grid container component="main" sx={{ height: '100vh' }}>
-
+      <Navbar/>
       <Grid
           item
           xs={false}
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(https://t3.ftcdn.net/jpg/05/79/48/52/360_F_579485255_hzHox0stuQmBx5QViwnQqQjk7RD2AJza.jpg)',
+            backgroundImage: 'url(https://theadfocus.com/wp-content/uploads/2022/03/Times-Square-andreas-m-unsplash-scaled.jpg)',
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -157,7 +157,7 @@ const Login = () => {
         <RightSideForm>
           <LoginContainer>
             <LoginTitleContainer>
-              <h1>Welcome to AdPlacely!</h1>
+              <h1>Welcome to Find Your Space!</h1>
             </LoginTitleContainer>
 
             <form onSubmit={handleSubmit}>
