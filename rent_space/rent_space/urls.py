@@ -17,8 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+#from django.conf.urls import url
+from user_management.views import *
+#from user_management.views import custom_login, custom_logout
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('testApi.urls'))
+    path('api/', include('testApi.urls')),
+    path('signup/', homeView.signup, name='signup'),
+    path('api/login/', homeView.custom_login, name='login'),
+    path('api/logout/', homeView.custom_logout, name='logout'),
+    # path('', homeView.as_view(), name="anything"),
 ]
