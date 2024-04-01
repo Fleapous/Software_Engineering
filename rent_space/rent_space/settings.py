@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import rest_framework.permissions
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,8 +26,9 @@ SECRET_KEY = 'django-insecure-8r!1400u4vu!#=@0=*&!um@r=z39f4ywovuvp9dto#^w+kswzn
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+#i changed this to false to connect to the database
 ALLOWED_HOSTS = []
+#'find-your-space.database.windows.net'
 
 
 # Application definition
@@ -51,8 +54,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware'
+    'django.middleware.common.CommonMiddleware',
+    # 'django.contrib.auth.backends.ModelBackend',
 ]
+
+#REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': [rest_framework.permissions.AllowAny]}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -87,6 +93,22 @@ DATABASES = {
     }
 }
 
+#BIG PROBLEM FOR TOMORROW, GOODLUCK FUTURE TSITSI, YOURE GONNA NEED IT
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'FindYourSpaceDatabase',
+#         'USER': 'space',
+#         'PASSWORD': '1q2w3e4r.',
+#         'HOST': 'find-your-space.database.windows.net',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     }
+# }
+
+USE_TZ = False
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -116,7 +138,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+#USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
