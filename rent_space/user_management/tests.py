@@ -8,20 +8,50 @@ from django.urls import reverse
 # Create your tests here.
 class UserTestCase(TestCase):
     def setUp(self):
-        # Create test user
         self.user = User.objects.create_user(username='test_user', email='test@example.com', password='password123')
 
-    def test_user_creation(self):
-        # Test user creation
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(self.user.username, 'test_user')
-        self.assertEqual(self.user.email, 'test@example.com')
+    def test_custom_login(self):
+    
+        user = User.objects.create_user(username='testuser2', password='testpassword')
 
-    def test_login_view(self):
-        # Test login view
-        response = self.client.post(reverse('login'), {'username': 'test_user', 'password': 'password123'})
-        self.assertEqual(response.status_code, 200)  # Assuming successful login returns status code 200
+        response = self.client.post(reverse('login'), {
+            'username': 'testuser2',
+            'password': 'testpassword',
+        })
 
-        # Add more assertions based on your login view's behavior
+        self.assertEqual(response.status_code, 200)
 
-    # Add more test methods as needed
+       
+        self.assertTrue(response.json()['message'], 'Login successful')
+    
+
+    def test_custom_logout(self):
+        self.client.post(reverse('login'), {
+            'username': 'testuser2',
+            'password': 'testpassword',
+        })
+
+      
+        response = self.client.post(reverse('logout'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['message'], 'Logout successful')
+
+    def test_signup(self):
+       
+        response = self.client.post(reverse('signup'), {
+            'username': 'testuser',
+            'email': 'testemail@example.com',
+            'password1': 'testpassword',
+            'password2': 'testpassword',
+        })
+
+       
+        print("Response status code:", response.status_code)
+        self.assertEqual(response.status_code, 201)
+
+        
+        print("User created:", User.objects.filter(username='testuser').exists())
+        self.assertTrue(User.objects.filter(username='testuser').exists())
+
+
+        

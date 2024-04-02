@@ -32,10 +32,22 @@ from user_management.serializers import UserSerializer
 
 @csrf_exempt
 class homeView(APIView):
+    # @api_view(['POST'])
+    # def signup(request):
+    #     if request.method == 'POST':
+    #         form = UserCreationForm(request.POST)
+    #         if form.is_valid():
+    #             form.save()
+    #             return Response({'message': 'User created successfully'}, status=201)
+    #         else:
+    #             return Response({'errors': form.errors}, status=400)
+    #     else:
+    #         return Response({'message': 'Method not allowed'}, status=405)
+    
     @api_view(['POST'])
     def signup(request):
         if request.method == 'POST':
-            form = UserCreationForm(request.POST)
+            form = UserCreationForm(request.data) 
             if form.is_valid():
                 form.save()
                 return Response({'message': 'User created successfully'}, status=201)
