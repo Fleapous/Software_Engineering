@@ -1,12 +1,15 @@
-from django.shortcuts import render
 from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 from .models import User
 from .serializers import UserSerializer
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout, authenticate, login
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -14,35 +17,20 @@ class UserListCreate(generics.ListCreateAPIView):
     serializer_class = UserSerializer
 
 
-# Create your views here.
-from django.shortcuts import render
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login as auth_login, logout, authenticate, login
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from serializers import UserSerializer
-
-
-#from serializers import *
+# from serializers import *
 
 
 # class homeView(APIView):
-    # def get(selfself, request):
-    #     output = [{"name": output.email, "email": output.email}
-    #               for output in User.objects.all()]
-    #     return Response(output)
-    #
-    # def post(self, request):
-    #     serializer = UserSerializer(data=request.data)
-    #     if serializer.is_valid(raise_exception=True):
-    #         serializer.save()
-    #         return Response(serializer.data)
+# def get(selfself, request):
+#     output = [{"name": output.email, "email": output.email}
+#               for output in User.objects.all()]
+#     return Response(output)
+#
+# def post(self, request):
+#     serializer = UserSerializer(data=request.data)
+#     if serializer.is_valid(raise_exception=True):
+#         serializer.save()
+#         return Response(serializer.data)
 
 @csrf_exempt
 class homeView(APIView):
@@ -69,7 +57,6 @@ class homeView(APIView):
                 return Response({'errors': form.errors}, status=400)
         else:
             return Response({'message': 'Method not allowed'}, status=405)
-
 
     @api_view(['POST'])
     def custom_login(request):
@@ -106,7 +93,6 @@ class UserProfileView(APIView):
         user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
-
 
 # @csrf_exempt
 # def login(request):
