@@ -26,7 +26,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user_management.serializers import UserSerializer
+from serializers import UserSerializer
 
 
 #from serializers import *
@@ -89,6 +89,8 @@ class homeView(APIView):
     def custom_logout(request):
         logout(request)
         return JsonResponse({'message': 'Logout successful'}, status=200)
+
+
 class UpdateUser(APIView):
     def put(self, request, pk):
         user = get_object_or_404(User, pk=pk)
