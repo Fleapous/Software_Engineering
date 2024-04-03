@@ -2,10 +2,10 @@ from django.test import TestCase
 
 # Create your tests here.
 from django.test import TestCase
-from django.contrib.auth.models import User
+from .models import User
 from django.urls import reverse
 from rest_framework import status
-from serializers import UserSerializer
+from user_management.serializers import UserSerializer
 
 # Create your tests here.
 class UserTestCase(TestCase):
@@ -74,8 +74,10 @@ class UserTestCase(TestCase):
 
 
     def test_get_user_profile(self):
+
+        User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
         # Make a GET request to fetch the user profile
-        response = self.client.get(reverse('user_profile', kwargs={'pk': self.user.pk}))
+        response = self.client.get(reverse('profile', kwargs={'pk': self.user.pk}))
 
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
