@@ -8,7 +8,7 @@ class AdSpace(models.Model):
     size = models.FloatField()
     price = models.FloatField()
     availability = models.BooleanField()
-    photos = models.ImageField(upload_to='', null=True, blank=True)
+    photos = models.CharField(max_length=255, null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spaces_owned', null=True, blank=True)
 
     def checkAvailability(self):
