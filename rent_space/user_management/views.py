@@ -1,4 +1,18 @@
 from django.shortcuts import render
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.generics import get_object_or_404
+from .models import User
+from .serializers import UserSerializer
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+
+class UserListCreate(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 
 # Create your views here.
 from django.shortcuts import render
@@ -12,7 +26,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user_management.serializers import UserSerializer
+from serializers import UserSerializer
 
 
 #from serializers import *
@@ -43,11 +57,11 @@ class homeView(APIView):
     #             return Response({'errors': form.errors}, status=400)
     #     else:
     #         return Response({'message': 'Method not allowed'}, status=405)
-    
+
     @api_view(['POST'])
     def signup(request):
         if request.method == 'POST':
-            form = UserCreationForm(request.data) 
+            form = UserCreationForm(request.data)
             if form.is_valid():
                 form.save()
                 return Response({'message': 'User created successfully'}, status=201)
@@ -76,6 +90,22 @@ class homeView(APIView):
         logout(request)
         return JsonResponse({'message': 'Logout successful'}, status=200)
 
+
+class UpdateUser(APIView):
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileView(APIView):
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 # @csrf_exempt
