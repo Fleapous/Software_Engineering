@@ -79,18 +79,25 @@ class homeView(APIView):
 
 
 class UpdateUser(APIView):
-    def put(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+    def put(self, request):
+        print(request.data)  # Print request data for debugging
+
+        user = request.user
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print(serializer.errors)  # Print serializer errors for debugging
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class UserProfileView(APIView):
-    def get(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+    def get(self, request):
+        username = request.query_params.get('username')  # Get username from query parameters
+        user = get_object_or_404(User, username=username)  # Fetch user based on username
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
