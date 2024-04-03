@@ -4,7 +4,7 @@ from .models import User
 from .serializers import UserSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout, authenticate, login
 from rest_framework.decorators import api_view
