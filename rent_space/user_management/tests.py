@@ -1,16 +1,21 @@
 from django.test import TestCase
 
+
 # Create your tests here.
 from django.test import TestCase
 from .models import User
 from django.urls import reverse
 from rest_framework import status
 from user_management.serializers import UserSerializer
+import json
 
 # Create your tests here.
 class UserTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', email='test@example.com', password='password123')
+        self.user.set_password('password123')
+        self.user.save()
+
 
     def test_custom_login(self):
 
@@ -56,33 +61,22 @@ class UserTestCase(TestCase):
         self.assertTrue(User.objects.filter(username='testuser').exists())
 
 
-    def test_update_user(self):
-        # Define the data to be updated
-        updated_data = {'username': 'updated_username', 'email': 'updated@example.com'}
-
-        # Make a PUT request to update the user
-        response = self.client.put(reverse('update_user', kwargs={'pk': self.user.pk}), data=updated_data)
-
-
-        # Check if the response status code is 200 (OK)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check if the user data has been updated correctly
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, 'updated_username')
-        self.assertEqual(self.user.email, 'updated@example.com')
-
-
     def test_get_user_profile(self):
-
-        User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
-        # Make a GET request to fetch the user profile
-        response = self.client.get(reverse('profile', kwargs={'pk': self.user.pk}))
-
-        # Check if the response status code is 200 (OK)
+        response = self.client.get(reverse('profile') + '?username=test_user')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check if the response data matches the user's data
         expected_data = UserSerializer(instance=self.user).data
         self.assertEqual(response.data, expected_data)
 
+
+    def test_update_user(self):
+        updated_data = {
+            "username": "UPDATED",
+            "password": "password123",
+            "contactInfo": "updated"
+        }
+        url = reverse('update_user')
+        self.client.force_login(self.user)  # Log in the user
+        response = self.client.put(url, data=updated_data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, updated_data['username'])

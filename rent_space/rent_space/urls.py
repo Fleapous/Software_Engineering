@@ -29,10 +29,9 @@ urlpatterns = [
     path('api/logout/', homeView.custom_logout, name='logout'),
     # path('', homeView.as_view(), name="anything"),
     path('api/', include('space_booking.urls')),  # Include the URLs of your app
-    #path("accounts/", include("user_management.urls")),
 
     #adding new urls for testing
     path('users/', UserListCreate.as_view(), name='user-list-create'),
-    path('update/', UpdateUser.as_view(), name='update_user'),
+    path('update_user/', UpdateUser.as_view(), name='update_user'),
     path('profile/', UserProfileView.as_view(), name='profile'),
 ]
