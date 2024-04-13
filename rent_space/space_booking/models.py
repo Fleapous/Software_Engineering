@@ -33,18 +33,22 @@ class Booking(models.Model):
     def updateStatus(self):
         pass
 
-
+# add title
 class Rating(models.Model):
+    title = models.CharField(max_length=100)
     client = models.ForeignKey(User, on_delete=models.CASCADE)
     adSpace = models.ForeignKey(AdSpace, on_delete=models.CASCADE)
-    score = models.FloatField()
-    comment = models.TextField()
+    rating = models.IntegerField(choices=[(i, str(i)) for i in range(6)])
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
 
-    def updateScore(self):
-        pass
+    def updateScore(self, new_rating):
+        self.rating = new_rating
+        self.save(update_fields=['rating'])
 
-    def updateComment(self):
-        pass
+    def updateComment(self, new_comment):
+        self.description = new_comment
+        self.save(update_fields=['description'])
 
 
 class Payment(models.Model):
