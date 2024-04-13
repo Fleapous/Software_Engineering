@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
 class User(AbstractUser):
     contactInfo = models.CharField(max_length=100)
     groups = models.ManyToManyField('auth.Group', related_name='custom_user_groups')

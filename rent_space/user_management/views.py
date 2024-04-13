@@ -46,17 +46,35 @@ class homeView(APIView):
     #     else:
     #         return Response({'message': 'Method not allowed'}, status=405)
 
+    # @api_view(['POST'])
+    # def signup(request):
+    #     if request.method == 'POST':
+    #         form = UserCreationForm(request.data)
+    #         if form.is_valid():
+    #             form.save()
+    #             return Response({'message': 'User created successfully'}, status=201)
+    #         else:
+    #             return Response({'errors': form.errors}, status=400)
+    #     else:
+    #         return Response({'message': 'Method not allowed'}, status=405)
+
     @api_view(['POST'])
     def signup(request):
         if request.method == 'POST':
-            form = UserCreationForm(request.data)
-            if form.is_valid():
-                form.save()
+            username = request.data.get('username')
+            password = request.data.get('password')
+            email = request.data.get('email')
+            # Additional fields as per your User model
+
+            # Create the user object
+            user = User.objects.create_user(username=username, email=email, password=password)
+
+            if user:
                 return Response({'message': 'User created successfully'}, status=201)
             else:
-                return Response({'errors': form.errors}, status=400)
+                return Response({'error': 'Failed to create user'}, status=400)
         else:
-            return Response({'message': 'Method not allowed'}, status=405)
+            return Response({'error': 'Method not allowed'}, status=405)
 
     @api_view(['POST'])
     def custom_login(request):

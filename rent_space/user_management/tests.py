@@ -46,10 +46,10 @@ class UserTestCase(TestCase):
     def test_signup(self):
 
         response = self.client.post(reverse('signup'), {
-            'username': 'testuser',
-            'email': 'testemail@example.com',
-            'password1': 'testpassword',
-            'password2': 'testpassword',
+            'username': 'ttestpuser',
+            'email': 'ttestp@example.com',
+            'password1': 'password123',
+            'password2': 'password123',
         })
 
 
@@ -57,8 +57,8 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
 
 
-        print("User created:", User.objects.filter(username='testuser').exists())
-        self.assertTrue(User.objects.filter(username='testuser').exists())
+        print("User created:", User.objects.filter(username='ttestpuser').exists())
+        self.assertTrue(User.objects.filter(username='ttestpuser').exists())
 
 
     def test_get_user_profile(self):
