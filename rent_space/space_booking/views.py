@@ -4,8 +4,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import AdSpace, Rating
-from .serializers import AdSpaceSerializer, RatingSerializer
+from .models import AdSpace, Rating, Booking
+from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer
 
 
 class AdSpaceList(generics.ListAPIView):
@@ -107,3 +107,44 @@ class DeleteRating(APIView):
         rating = get_object_or_404(Rating, pk=pk)
         rating.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BookingListView(generics.ListAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    def list(self, request, *args, **kwargs):
+        bookings = self.get_queryset()
+        ad_space_bookings = {}
+        for booking in bookings:
+            ad_space_id = booking.adSpace_id
+            if ad_space_id not in ad_space_bookings:
+                ad_space_bookings[ad_space_id] = []
+            ad_space_bookings[ad_space_id].append(booking)
+
+        booking_data = []
+        for ad_space_id, bookings in ad_space_bookings.items():
+            ad_space_data = {
+                'id': ad_space_id,
+                'bookings': BookingSerializer(bookings, many=True).data
+            }
+            booking_data.append(ad_space_data)
+
+        return Response(booking_data)
+
+
+class BookingCreateView(APIView):
+    def post(self, request):
+        serializer = BookingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingDeleteView(generics.DestroyAPIView):
+    queryset = Booking.objects.all()
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

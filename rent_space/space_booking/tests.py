@@ -1,14 +1,16 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from .models import AdSpace, Rating
+from .models import AdSpace, Rating, Booking
 from user_management.models import User
 
 
 class AdSpaceAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+
 
     def test_create_adspace(self):
         data = {
@@ -74,6 +76,65 @@ class AdSpaceAPITestCase(TestCase):
         rating.updateComment(new_comment)
         updated_rating = Rating.objects.get(pk=rating.pk)
         self.assertEqual(updated_rating.description, new_comment)
+
+    def test_fetch_bookings(self):
+        client = APIClient()
+        adspace = AdSpace.objects.create(location="Test Location", size=100, price=50.00, availability=True,
+                                         photos="http://example.com/image.jpg")
+        booking1 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00', status=True)
+        booking2 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-05-01T10:00:00', status=False)
+
+        client = APIClient()
+
+        response = client.get('/api/bookings/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.data
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 1)
+
+        first_entry = data[0]
+        self.assertIn('id', first_entry)
+        self.assertEqual(first_entry['id'], adspace.id)
+        self.assertIn('bookings', first_entry)
+        self.assertIsInstance(first_entry['bookings'], list)
+
+        bookings_list = first_entry['bookings']
+        self.assertEqual(len(bookings_list), 2)
+
+        for booking in bookings_list:
+            self.assertIn('client', booking)
+            self.assertIn('client', booking)
+            self.assertEqual(booking['client'], self.user.id)
+            self.assertIn('adSpace', booking)
+            self.assertEqual(booking['adSpace'], adspace.id)
+            self.assertIn('bookingDate', booking)
+            self.assertIn('status', booking)
+
+
+    # def test_create_booking(self):
+    #     data = {
+    #         "client": 1,
+    #         "adSpace": 1,
+    #         "bookingDate": '2024-04-30T12:00:00',
+    #         "status": True
+    #     }
+    #     response = self.client.post('/new-booking/', data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     self.assertEqual(Booking.objects.count(), 1)
+    #     booking = Booking.objects.get()
+    #     self.assertEqual(booking.bookingDate, data['bookingDate'])
+
+
+    def test_delete_booking(self):
+        client = APIClient()
+        booking = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00', status=True)
+        booking_id = booking.pk
+        response = client.delete(f'/api/bookings/{booking_id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.assertRaises(Booking.DoesNotExist):
+            Booking.objects.get(pk=booking_id)
+
 
 # class RatingTestCase(TestCase):
 #     def setUp(self):
