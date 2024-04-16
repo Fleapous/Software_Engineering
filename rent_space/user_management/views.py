@@ -10,7 +10,7 @@ from django.contrib.auth import logout, authenticate, login
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.views.decorators.csrf import csrf_exempt
 
 class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -34,48 +34,30 @@ class UserListCreate(generics.ListCreateAPIView):
 
 @csrf_exempt
 class homeView(APIView):
-    # @api_view(['POST'])
-    # def signup(request):
-    #     if request.method == 'POST':
-    #         form = UserCreationForm(request.POST)
-    #         if form.is_valid():
-    #             form.save()
-    #             return Response({'message': 'User created successfully'}, status=201)
-    #         else:
-    #             return Response({'errors': form.errors}, status=400)
-    #     else:
-    #         return Response({'message': 'Method not allowed'}, status=405)
-
-    # @api_view(['POST'])
-    # def signup(request):
-    #     if request.method == 'POST':
-    #         form = UserCreationForm(request.data)
-    #         if form.is_valid():
-    #             form.save()
-    #             return Response({'message': 'User created successfully'}, status=201)
-    #         else:
-    #             return Response({'errors': form.errors}, status=400)
-    #     else:
-    #         return Response({'message': 'Method not allowed'}, status=405)
-
     @api_view(['POST'])
     def signup(request):
         if request.method == 'POST':
             username = request.data.get('username')
-            password = request.data.get('password')
+            password = request.data.get('password1')
+            confirm_password = request.data.get('password2')  # Assuming you have a field named 'confirm_password'
             email = request.data.get('email')
             # Additional fields as per your User model
+
+            # Check if password and confirm password match
+            if password != confirm_password:
+                return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create the user object
             user = User.objects.create_user(username=username, email=email, password=password)
 
             if user:
-                return Response({'message': 'User created successfully'}, status=201)
+                return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
             else:
-                return Response({'error': 'Failed to create user'}, status=400)
+                return Response({'error': 'Failed to create user'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'error': 'Method not allowed'}, status=405)
-
+            return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+    @csrf_exempt
     @api_view(['POST'])
     def custom_login(request):
         if request.method == 'POST':
@@ -90,6 +72,7 @@ class homeView(APIView):
         else:
             return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+    @csrf_exempt
     @api_view(['POST'])
     def custom_logout(request):
         logout(request)
@@ -110,24 +93,9 @@ class UpdateUser(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class UserProfileView(APIView):
     def get(self, request):
         username = request.query_params.get('username')  # Get username from query parameters
         user = get_object_or_404(User, username=username)  # Fetch user based on username
         serializer = UserSerializer(user)
         return Response(serializer.data)
-
-# @csrf_exempt
-# def login(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             user = form.get_user()
-#             auth_login(request, user)  # Log the user in after successful login
-#             return JsonResponse({'message': 'Login successful'}, status=200)
-#         else:
-#             return JsonResponse({'errors': form.errors}, status=400)
-#     else:
-#         return JsonResponse({'message': 'Method not allowed'}, status=405)
