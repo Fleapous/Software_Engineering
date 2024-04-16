@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import AdSpaceList, CreateAdSpace, GetAdSpace, UpdateAdSpace, DeleteAdSpace
 from .views import RatingList, CreateRating, GetRating, UpdateRating, DeleteRating
+from .views import BookingListView, BookingCreateView, BookingDeleteView
 
 
 urlpatterns = [
@@ -15,4 +16,8 @@ urlpatterns = [
     path('rating/<int:pk>/', GetRating.as_view(), name='get-rating'),
     path('rating/<int:pk>/update/', UpdateRating.as_view(), name='update-rating'),
     path('rating/<int:pk>/delete/', DeleteRating.as_view(), name='delete-rating'),
+
+    path('new-booking/', BookingCreateView.as_view(), name='new-booking'),
+    path('bookings/', BookingListView.as_view(), name='booking-list'),
+    path('bookings/<int:pk>/', BookingDeleteView.as_view(), name='booking-delete'),
 ]
