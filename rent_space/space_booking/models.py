@@ -33,6 +33,7 @@ class Booking(models.Model):
     def updateStatus(self):
         pass
 
+
 # add title
 class Rating(models.Model):
     title = models.CharField(max_length=100)
@@ -52,10 +53,11 @@ class Rating(models.Model):
 
 
 class Payment(models.Model):
-    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_payments')
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_payments', null=True, blank=True)
     amount = models.FloatField()
     paymentStatus = models.BooleanField()
-    spaceOwnerId = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_payments')
+    spaceOwnerId = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_payments', null=True,
+                                     blank=True)
 
     def processPayment(self):
         pass

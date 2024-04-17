@@ -1,16 +1,15 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from .models import AdSpace, Rating, Booking
 from user_management.models import User
+
+from .models import AdSpace, Rating, Booking, Payment
 
 
 class AdSpaceAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
-
-
 
     def test_create_adspace(self):
         data = {
@@ -60,7 +59,8 @@ class AdSpaceAPITestCase(TestCase):
         adspace = AdSpace.objects.create(location="Test Location", size=100, price=50.00, availability=True,
                                          photos="http://example.com/image.jpg")
         user = User.objects.create_user(username='testuser2', password='testpassword')
-        rating = Rating.objects.create(client=user, adSpace=adspace, rating=3, description="Test Comment", title="my comment")
+        rating = Rating.objects.create(client=user, adSpace=adspace, rating=3, description="Test Comment",
+                                       title="my comment")
         new_score = 4
         rating.updateScore(new_score)
         updated_rating = Rating.objects.get(pk=rating.pk)
@@ -71,7 +71,8 @@ class AdSpaceAPITestCase(TestCase):
         adspace = AdSpace.objects.create(location="Test Location", size=100, price=50.00, availability=True,
                                          photos="http://example.com/image.jpg")
         user = User.objects.create_user(username='testuser2', password='testpassword')
-        rating = Rating.objects.create(client=user, adSpace=adspace, rating=3, description="Test Comment", title="my comment")
+        rating = Rating.objects.create(client=user, adSpace=adspace, rating=3, description="Test Comment",
+                                       title="my comment")
         new_comment = "Updated Test Comment"
         rating.updateComment(new_comment)
         updated_rating = Rating.objects.get(pk=rating.pk)
@@ -81,8 +82,10 @@ class AdSpaceAPITestCase(TestCase):
         client = APIClient()
         adspace = AdSpace.objects.create(location="Test Location", size=100, price=50.00, availability=True,
                                          photos="http://example.com/image.jpg")
-        booking1 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00', status=True)
-        booking2 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-05-01T10:00:00', status=False)
+        booking1 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00',
+                                          status=True)
+        booking2 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-05-01T10:00:00',
+                                          status=False)
 
         client = APIClient()
 
@@ -111,7 +114,6 @@ class AdSpaceAPITestCase(TestCase):
             self.assertIn('bookingDate', booking)
             self.assertIn('status', booking)
 
-
     # def test_create_booking(self):
     #     data = {
     #         "client": 1,
@@ -125,7 +127,6 @@ class AdSpaceAPITestCase(TestCase):
     #     booking = Booking.objects.get()
     #     self.assertEqual(booking.bookingDate, data['bookingDate'])
 
-
     def test_delete_booking(self):
         client = APIClient()
         booking = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00', status=True)
@@ -136,35 +137,41 @@ class AdSpaceAPITestCase(TestCase):
             Booking.objects.get(pk=booking_id)
 
 
-# class RatingTestCase(TestCase):
-#     def setUp(self):
-#         # Create a test user
-#         self.user = User.objects.create(username='test_user')
-#
-#         # Create a test ad space
-#         self.ad_space = AdSpace.objects.create(location='Test Ad Space')
-#
-#         # Create a test rating
-#         self.rating = Rating.objects.create(client=self.user, adSpace=self.ad_space, score=3, comment='Test Comment')
-#
-#     def test_update_score(self):
-#         # Update the score of the rating
-#         new_score = 4
-#         self.rating.updateScore(new_score)
-#
-#         # Retrieve the updated rating from the database
-#         updated_rating = Rating.objects.get(pk=self.rating.pk)
-#
-#         # Check if the score was updated successfully
-#         self.assertEqual(updated_rating.score, new_score)
-#
-#     def test_update_comment(self):
-#         # Update the comment of the rating
-#         new_comment = 'Updated Test Comment'
-#         self.rating.updateComment(new_comment)
-#
-#         # Retrieve the updated rating from the database
-#         updated_rating = Rating.objects.get(pk=self.rating.pk)
-#
-#         # Check if the comment was updated successfully
-#         self.assertEqual(updated_rating.comment, new_comment)
+class PaymentAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        # Create a test payment
+        self.payment_data = {
+            'amount': 100.0,
+            'paymentStatus': True,
+        }
+        self.payment = Payment.objects.create(**self.payment_data)
+
+        # URL endpoints
+        self.payment_list_url = '/api/payments/'
+        self.payment_detail_url = f'/api/payments/{self.payment.pk}/'
+        self.payment_update_url = f'/api/payments/{self.payment.pk}/update/'
+        self.payment_create_url = '/api/create/payments/'
+
+    def test_create_payment(self):
+        response = self.client.post(self.payment_create_url, self.payment_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Payment.objects.count(), 2)
+        payment = Payment.objects.latest('id')
+        self.assertEqual(payment.amount, self.payment_data['amount'])
+
+    def test_update_payment(self):
+        updated_data = {
+            'amount': 150.0,
+            'paymentStatus': False,
+        }
+        response = self.client.put(self.payment_update_url, updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.amount, updated_data['amount'])
+
+    def test_delete_payment(self):
+        response = self.client.delete(self.payment_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Payment.objects.count(), 0)

@@ -4,8 +4,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import AdSpace, Rating, Booking
-from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer
+from .models import AdSpace, Rating, Booking, Payment
+from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer, PaymentSerializer
 
 
 class AdSpaceList(generics.ListAPIView):
@@ -148,3 +148,40 @@ class BookingDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class PaymentList(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+
+class CreatePayment(APIView):
+    def post(self, request):
+        serializer = PaymentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetPayment(APIView):
+    def get(self, request, pk):
+        payment = get_object_or_404(Payment, pk=pk)
+        serializer = PaymentSerializer(payment)
+        return Response(serializer.data)
+
+
+class UpdatePayment(APIView):
+    def put(self, request, pk):
+        payment = get_object_or_404(Payment, pk=pk)
+        serializer = PaymentSerializer(payment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeletePayment(APIView):
+    def delete(self, request, pk):
+        payment = get_object_or_404(Payment, pk=pk)
+        payment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
