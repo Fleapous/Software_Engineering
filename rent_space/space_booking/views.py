@@ -130,8 +130,25 @@ class BookingListView(generics.ListAPIView):
             booking_data.append(ad_space_data)
 
         return Response(booking_data)
+    
+    
+class FetchBookings(APIView):
+    def get(self, request):
+        bookings = Booking.objects.all()
+        booking_list = []
+        for booking in bookings:
+            booking_data = {
+                'id': booking.id,
+                'bookingDate': booking.bookingDate,
+                'status': booking.status,
+                'adSpace_id': booking.adSpace_id,
+                'client_id': booking.client_id,
+            }
+            booking_list.append(booking_data)
+        return Response(booking_list)
 
 
+    
 class BookingCreateView(APIView):
     def post(self, request):
         serializer = BookingSerializer(data=request.data)
@@ -147,6 +164,7 @@ class BookingDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class PaymentList(generics.ListAPIView):
