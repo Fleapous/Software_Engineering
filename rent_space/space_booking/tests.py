@@ -2,14 +2,28 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 from user_management.models import User
-
+from .serializers import NotApprovedAdSpaceSerializer
 from .models import AdSpace, Rating, Booking, Payment
+from django.urls import reverse
 
 
 class AdSpaceAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_not_approved_adspace_list(self):
+        # Creating some AdSpace objects
+        adspace1 = AdSpace.objects.create(owner=self.user, location='Location 1', size='10', price=10, availability=True, isApproved=False)
+        adspace2 = AdSpace.objects.create(owner=self.user, location='Location 2', size='10', price=20, availability=True, isApproved=False)
+        adspace3 = AdSpace.objects.create(owner=self.user, location='Location 3', size='10', price=30, availability=True, isApproved=True)
+        url = reverse('get-unapproved-adspaces')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.data
+        queryset = AdSpace.objects.filter(isApproved=False)
+        serializer = NotApprovedAdSpaceSerializer(queryset, many=True)
+        self.assertEqual(data, serializer.data)
 
     def test_create_adspace(self):
         data = {

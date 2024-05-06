@@ -5,16 +5,41 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import AdSpace, Rating, Booking, Payment
-from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer, PaymentSerializer
+from user_management.models import User
+from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer, PaymentSerializer, NotApprovedAdSpaceSerializer
 
 
-class AdSpaceList(generics.ListAPIView):
-    queryset = AdSpace.objects.all()
+class ApprovedAdSpaceList(generics.ListAPIView):
     serializer_class = AdSpaceSerializer
+
+    def get_queryset(self):
+        return AdSpace.objects.filter(isApproved=True)
+
+class NotApprovedAdSpaceList(generics.ListAPIView):
+    serializer_class = NotApprovedAdSpaceSerializer  # Use the new serializer
+
+    def get_queryset(self):
+        # Get the queryset of AdSpace objects not approved
+        queryset = AdSpace.objects.filter(isApproved=False)
+
+        # Fetch the related owner objects separately
+        owner_ids = queryset.values_list('owner', flat=True).distinct()
+        owners = User.objects.filter(pk__in=owner_ids)
+
+        # Convert owners queryset to a dictionary for efficient lookup
+        owners_dict = {owner.id: owner for owner in owners}
+
+        # Attach owner data to each AdSpace object
+        for ad_space in queryset:
+            ad_space.owner_data = owners_dict.get(ad_space.owner_id)
+
+        return queryset
 
 
 class CreateAdSpace(APIView):
     def post(self, request):
+        request.data['isApproved'] = False
+
         serializer = AdSpaceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -79,6 +104,7 @@ class RatingList(APIView):
 
         return Response(rating_data)
 
+
 class CreateRating(APIView):
     def post(self, request):
         serializer = RatingSerializer(data=request.data)
@@ -87,11 +113,13 @@ class CreateRating(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class GetRating(APIView):
     def get(self, request, pk):
         rating = get_object_or_404(Rating, pk=pk)
         serializer = RatingSerializer(rating)
         return Response(serializer.data)
+
 
 class UpdateRating(APIView):
     def put(self, request, pk):
@@ -101,6 +129,7 @@ class UpdateRating(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DeleteRating(APIView):
     def delete(self, request, pk):
@@ -112,6 +141,7 @@ class DeleteRating(APIView):
 class BookingListView(generics.ListAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
     def list(self, request, *args, **kwargs):
         bookings = self.get_queryset()
         ad_space_bookings = {}
@@ -160,6 +190,7 @@ class BookingCreateView(APIView):
 
 class BookingDeleteView(generics.DestroyAPIView):
     queryset = Booking.objects.all()
+
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.delete()
