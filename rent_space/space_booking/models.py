@@ -10,6 +10,7 @@ class AdSpace(models.Model):
     availability = models.BooleanField()
     photos = models.CharField(max_length=255, null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spaces_owned', null=True, blank=True)
+    isApproved = models.BooleanField(default=False)
 
     def checkAvailability(self):
         pass
