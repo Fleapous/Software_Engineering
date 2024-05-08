@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import ApprovedAdSpaceList, CreateAdSpace, GetAdSpace, UpdateAdSpace, DeleteAdSpace, NotApprovedAdSpaceList
 from .views import BookingListView, BookingCreateView, BookingDeleteView
-from .views import AdSpaceList, CreateAdSpace, GetAdSpace, UpdateAdSpace, DeleteAdSpace
+from .views import CreateAdSpace, GetAdSpace, UpdateAdSpace, DeleteAdSpace
 from .views import BookingListView, BookingCreateView, BookingDeleteView,FetchBookings
 from .views import PaymentList, CreatePayment, GetPayment, UpdatePayment, DeletePayment
 from .views import RatingList, CreateRating, GetRating, UpdateRating, DeleteRating
