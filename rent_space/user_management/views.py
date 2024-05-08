@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserListSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 #from django.contrib.auth.models import User
@@ -12,11 +12,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 
-class UserListCreate(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class UserListCreate(generics.ListCreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
+class UserListCreate(APIView):
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserListSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def delete_user(request, user_id):
+        try:
+            user = User.objects.get(pk=user_id)
+            user.delete()
+            return JsonResponse({'message': 'User deleted successfully'}, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
 # from serializers import *
 
 
@@ -99,3 +112,6 @@ class UserProfileView(APIView):
         user = get_object_or_404(User, username=username)  # Fetch user based on username
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+
+# class UserList(APIView):

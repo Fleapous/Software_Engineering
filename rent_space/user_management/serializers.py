@@ -26,3 +26,12 @@ class UserSerializer(serializers.ModelSerializer):
         instance.contactInfo = validated_data.get('contactInfo', instance.contactInfo)
         instance.save()
         return instance
+
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'contactInfo']
