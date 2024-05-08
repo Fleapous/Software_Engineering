@@ -6,7 +6,6 @@ from .serializers import NotApprovedAdSpaceSerializer
 from .models import AdSpace, Rating, Booking, Payment
 from django.urls import reverse
 
-
 class AdSpaceAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -94,39 +93,32 @@ class AdSpaceAPITestCase(TestCase):
 
     def test_fetch_bookings(self):
         client = APIClient()
+
         adspace = AdSpace.objects.create(location="Test Location", size=100, price=50.00, availability=True,
-                                         photos="http://example.com/image.jpg")
-        booking1 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-04-30T12:00:00',
-                                          status=True)
-        booking2 = Booking.objects.create(client=self.user, adSpace_id=1, bookingDate='2024-05-01T10:00:00',
-                                          status=False)
+                                        photos="http://example.com/image.jpg")
 
-        client = APIClient()
+        booking1 = Booking.objects.create(client_id=self.user.id, adSpace_id=adspace.id, bookingDate='2024-04-30T12:00:00',
+                                        status=True)
 
-        response = client.get('/api/bookings/')
+        response = client.get('/api/get-all-bookings/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         data = response.data
         self.assertIsInstance(data, list)
         self.assertEqual(len(data), 1)
 
-        first_entry = data[0]
-        self.assertIn('id', first_entry)
-        self.assertEqual(first_entry['id'], adspace.id)
-        self.assertIn('bookings', first_entry)
-        self.assertIsInstance(first_entry['bookings'], list)
-
-        bookings_list = first_entry['bookings']
-        self.assertEqual(len(bookings_list), 2)
-
-        for booking in bookings_list:
-            self.assertIn('client', booking)
-            self.assertIn('client', booking)
-            self.assertEqual(booking['client'], self.user.id)
-            self.assertIn('adSpace', booking)
-            self.assertEqual(booking['adSpace'], adspace.id)
-            self.assertIn('bookingDate', booking)
-            self.assertIn('status', booking)
+       
+        first_booking_data = data[0]
+        self.assertIn('id', first_booking_data)
+        self.assertEqual(first_booking_data['id'], booking1.id)
+        self.assertIn('client_id', first_booking_data)
+        self.assertEqual(first_booking_data['client_id'], self.user.id)
+        self.assertIn('adSpace_id', first_booking_data)
+        self.assertEqual(first_booking_data['adSpace_id'], adspace.id)
+        self.assertIn('bookingDate', first_booking_data)
+        self.assertEqual(first_booking_data['bookingDate'].isoformat(), '2024-04-30T12:00:00')
+        self.assertIn('status', first_booking_data)
+        self.assertEqual(first_booking_data['status'], True)
 
     # def test_create_booking(self):
     #     data = {
