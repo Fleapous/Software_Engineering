@@ -1,7 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
-from .models import User
-from .serializers import UserSerializer, UserListSerializer
+from .models import User, Log
+
+from .serializers import UserSerializer, UserListSerializer, LogSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 #from django.contrib.auth.models import User
@@ -114,4 +115,7 @@ class UserProfileView(APIView):
         return Response(serializer.data)
 
 
-# class UserList(APIView):
+
+class LogListCreateView(generics.ListCreateAPIView):
+    queryset = Log.objects.all()
+    serializer_class = LogSerializer
