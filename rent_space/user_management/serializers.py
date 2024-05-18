@@ -6,6 +6,7 @@ from .models import User
 # Create operation
 from rest_framework import serializers
 from .models import User
+from .models import Log
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,3 +36,9 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'contactInfo']
+
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Log
+        fields = '__all__'

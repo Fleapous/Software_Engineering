@@ -1,8 +1,11 @@
+from django.contrib.admin import AdminSite
 from django.test import TestCase
 
 # Create your tests here.
 from django.test import TestCase
-from .models import User
+from django.utils import timezone
+from .admin import LogAdmin
+from .models import User, Log
 from django.urls import reverse
 from rest_framework import status
 from user_management.serializers import UserSerializer
@@ -102,3 +105,57 @@ class UserListTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), User.objects.count())
+
+
+class LogModelTest(TestCase):
+
+    def setUp(self):
+        self.log = Log.objects.create(
+            path='/api/endpoint1',
+            method='GET',
+            status_code=200,
+            duration=0.5,
+            timestamp=timezone.now()
+        )
+
+    def test_log_creation(self):
+        self.assertIsInstance(self.log, Log)
+        self.assertEqual(self.log.path, '/api/endpoint1')
+        self.assertEqual(self.log.method, 'GET')
+        self.assertEqual(self.log.status_code, 200)
+        self.assertEqual(self.log.duration, 0.5)
+        self.assertIsNotNone(self.log.timestamp)
+
+    def test_str_method(self):
+        self.assertEqual(str(self.log), f"{self.log.method} {self.log.path} - {self.log.status_code}")
+
+
+class LogAdminTest(TestCase):
+    def setUp(self):
+        self.site = AdminSite()
+        self.log_admin = LogAdmin(Log, self.site)
+        self.log = Log.objects.create(
+            path='/api/endpoint1',
+            method='GET',
+            status_code=200,
+            duration=0.5,
+            timestamp=timezone.now()
+        )
+
+    def test_list_display(self):
+        self.assertEqual(
+            self.log_admin.list_display,
+            ('id', 'path', 'method', 'status_code', 'duration', 'timestamp')
+        )
+
+    def test_list_filter(self):
+        self.assertEqual(
+            self.log_admin.list_filter,
+            ('status_code', 'method')
+        )
+
+    def test_search_fields(self):
+        self.assertEqual(
+            self.log_admin.search_fields,
+            ('path',)
+        )
