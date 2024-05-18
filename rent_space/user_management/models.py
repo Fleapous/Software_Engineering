@@ -38,6 +38,16 @@ class User(AbstractUser):
         pass
 
 
+class Log(models.Model):
+    path = models.CharField(max_length=255)
+    method = models.CharField(max_length=10)
+    status_code = models.IntegerField()
+    duration = models.FloatField()
+    timestamp = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.method} {self.path} - {self.status_code}"
+
 class AdminUser(User):
 
     def approveUser(self):

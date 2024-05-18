@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/logout/', homeView.custom_logout, name='logout'),
     # path('', homeView.as_view(), name="anything"),
     path('api/', include('space_booking.urls')),  # Include the URLs of your app
+    path('logs/', LogListCreateView.as_view(), name='log-list-create'),
 
     #adding new urls for testing
     path('users/', UserListCreate.as_view(), name='user-list-create'),
