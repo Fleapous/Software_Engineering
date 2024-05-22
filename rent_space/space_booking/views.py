@@ -55,9 +55,9 @@ class GetAdSpace(APIView):
 
 
 class UpdateAdSpace(APIView):
-    def put(self, request, pk):
+    def patch(self, request, pk):
         adspace = get_object_or_404(AdSpace, pk=pk)
-        serializer = AdSpaceSerializer(adspace, data=request.data)
+        serializer = AdSpaceSerializer(adspace, data=request.data, partial=True)  # Allow partial updates
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
