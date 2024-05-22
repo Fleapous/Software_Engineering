@@ -24,6 +24,7 @@ class UserListCreate(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod
+    @csrf_exempt
     def delete_user(request, user_id):
         try:
             user = User.objects.get(pk=user_id)
