@@ -1,5 +1,5 @@
 *.pyc
-db.sqlite3
+rent_space/db.sqlite3
 db.sqlite3-journal
 .DS_Store
 .env
