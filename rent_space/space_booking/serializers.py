@@ -6,7 +6,6 @@ from .models import AdSpace, Rating, Booking, Payment
 from user_management.serializers import UserSerializer  # Import the UserSerializer
 
 
-
 class NotApprovedAdSpaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdSpace
@@ -35,3 +34,11 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = ['client', 'adSpace', 'bookingDate', 'status']
+
+
+class BookingDetailSerializer(serializers.ModelSerializer):
+    adSpace = AdSpaceSerializer()
+
+    class Meta:
+        model = Booking
+        fields = ['id', 'adSpace', 'bookingDate', 'status']

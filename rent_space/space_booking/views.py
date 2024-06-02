@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 
 from .models import AdSpace, Rating, Booking, Payment
 from user_management.models import User
-from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer, PaymentSerializer, NotApprovedAdSpaceSerializer
+from .serializers import AdSpaceSerializer, RatingSerializer, BookingSerializer, PaymentSerializer, \
+    NotApprovedAdSpaceSerializer, BookingDetailSerializer
 
 
 class ApprovedAdSpaceList(generics.ListAPIView):
@@ -14,6 +15,7 @@ class ApprovedAdSpaceList(generics.ListAPIView):
 
     def get_queryset(self):
         return AdSpace.objects.filter(isApproved=True)
+
 
 class NotApprovedAdSpaceList(generics.ListAPIView):
     serializer_class = NotApprovedAdSpaceSerializer  # Use the new serializer
@@ -52,6 +54,14 @@ class GetAdSpace(APIView):
         adspace = get_object_or_404(AdSpace, pk=pk)
         serializer = AdSpaceSerializer(adspace)
         return Response(serializer.data)
+
+
+class AdSpaceListByOwner(generics.ListAPIView):
+    serializer_class = AdSpaceSerializer
+
+    def get_queryset(self):
+        owner_id = self.kwargs['ownerId']
+        return AdSpace.objects.filter(owner_id=owner_id)
 
 
 class UpdateAdSpace(APIView):
@@ -160,8 +170,8 @@ class BookingListView(generics.ListAPIView):
             booking_data.append(ad_space_data)
 
         return Response(booking_data)
-    
-    
+
+
 class FetchBookings(APIView):
     def get(self, request):
         bookings = Booking.objects.all()
@@ -178,7 +188,6 @@ class FetchBookings(APIView):
         return Response(booking_list)
 
 
-    
 class BookingCreateView(APIView):
     def post(self, request):
         serializer = BookingSerializer(data=request.data)
@@ -196,6 +205,13 @@ class BookingDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class BookingListByClient(generics.ListAPIView):
+    serializer_class = BookingDetailSerializer
+
+    def get_queryset(self):
+        client_id = self.kwargs['clientId']
+        return Booking.objects.filter(client_id=client_id)
 
 
 class PaymentList(generics.ListAPIView):
