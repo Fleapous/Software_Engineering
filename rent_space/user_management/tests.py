@@ -2,7 +2,7 @@ from django.contrib.admin import AdminSite
 from django.test import TestCase
 
 # Create your tests here.
-from django.test import TestCase
+from django.test import TestCase, Client
 
 from .admin import LogAdmin
 from .models import User, Log
@@ -160,3 +160,34 @@ class LogAdminTest(TestCase):
             self.log_admin.search_fields,
             ('path',)
         )
+
+
+class LoggingMiddlewareTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_logging_get_request(self):
+        response = self.client.get(reverse('signup'))
+        self.assertEqual(response.status_code, 405)
+
+        log = Log.objects.last()
+        self.assertIsNotNone(log)
+        self.assertEqual(log.path, reverse('signup'))
+        self.assertEqual(log.method, 'GET')
+        self.assertEqual(log.status_code, 405)
+
+    def test_logging_post_request(self):
+        response = self.client.post(reverse('signup'), data={
+            'username': 'testuser',
+            'password1': 'testpassword',
+            'password2': 'testpassword',
+            'email': 'testuser@example.com'
+        })
+        self.assertEqual(response.status_code, 201)  # User creation should return 201
+
+        log = Log.objects.last()
+        self.assertIsNotNone(log)
+        self.assertEqual(log.path, reverse('signup'))
+        self.assertEqual(log.method, 'POST')
+        self.assertEqual(log.status_code, 201)
