@@ -80,7 +80,7 @@ class homeView(APIView):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return JsonResponse({'message': 'Login successful'}, status=200)
+                return JsonResponse({'username': user.username,'id': user.id}, status=200)
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
         else:
