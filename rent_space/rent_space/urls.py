@@ -33,7 +33,7 @@ urlpatterns = [
 
     #adding new urls for testing
     path('users/', UserListCreate.as_view(), name='user-list-create'),
-    path('update_user/', UpdateUser.as_view(), name='update_user'),
+    path('update_user/<int:user_id>/', UpdateUser.as_view(), name='update_user'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('delete-user/<int:user_id>/', UserListCreate.delete_user, name='delete_user'),
 ]

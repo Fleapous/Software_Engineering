@@ -95,17 +95,20 @@ class homeView(APIView):
 
 
 class UpdateUser(APIView):
-    def put(self, request):
-        print(request.data)  # Print request data for debugging
 
-        user = request.user
-        serializer = UserSerializer(user, data=request.data)
+    def put(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
-            print(serializer.errors)  # Print serializer errors for debugging
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserProfileView(APIView):
