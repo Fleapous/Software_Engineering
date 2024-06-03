@@ -70,19 +70,32 @@ class UserTestCase(TestCase):
         expected_data = UserSerializer(instance=self.user).data
         self.assertEqual(response.data, expected_data)
 
-
     def test_update_user(self):
         updated_data = {
             "username": "UPDATED",
+            "email": "updatedemail@example.com",
             "password": "password123",
             "contactInfo": "updated"
         }
-        url = reverse('update_user')
-        self.client.force_login(self.user)  # Log in the user
+        # Login the user
+        self.client.login(username='testuser', password='password')
+
+        # URL with the user_id
+        url = reverse('update_user', args=[self.user.id])
+
         response = self.client.put(url, data=updated_data, content_type='application/json')
+
+        # Check the response status code
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Refresh the user instance from the database
         self.user.refresh_from_db()
+
+        # Check the updated fields
         self.assertEqual(self.user.username, updated_data['username'])
+        self.assertEqual(self.user.email, updated_data['email'])
+        self.assertTrue(self.user.check_password(updated_data['password']))
+        self.assertEqual(self.user.contactInfo, updated_data['contactInfo'])
 
     def test_delete_user(self):
         user_id = self.user.id
