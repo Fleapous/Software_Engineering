@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'contactInfo']
+        fields = ['id', 'username', 'email', 'password', 'contactInfo','first_name','last_name']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -28,6 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
         if password:
             instance.password = make_password(password)
         instance.contactInfo = validated_data.get('contactInfo', instance.contactInfo)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
 
