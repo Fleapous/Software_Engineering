@@ -2,7 +2,7 @@ from django.contrib.admin import AdminSite
 from django.test import TestCase
 
 # Create your tests here.
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils import timezone
 from .admin import LogAdmin
 from .models import User, Log
@@ -32,7 +32,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-        self.assertTrue(response.json()['message'], 'Login successful')
+        self.assertTrue(response.json()['username'], {'username': user.username, 'id': user.id} )
 
 
     def test_custom_logout(self):
@@ -70,19 +70,32 @@ class UserTestCase(TestCase):
         expected_data = UserSerializer(instance=self.user).data
         self.assertEqual(response.data, expected_data)
 
-
     def test_update_user(self):
         updated_data = {
             "username": "UPDATED",
+            "email": "updatedemail@example.com",
             "password": "password123",
             "contactInfo": "updated"
         }
-        url = reverse('update_user')
-        self.client.force_login(self.user)  # Log in the user
+        # Login the user
+        self.client.login(username='testuser', password='password')
+
+        # URL with the user_id
+        url = reverse('update_user', args=[self.user.id])
+
         response = self.client.put(url, data=updated_data, content_type='application/json')
+
+        # Check the response status code
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Refresh the user instance from the database
         self.user.refresh_from_db()
+
+        # Check the updated fields
         self.assertEqual(self.user.username, updated_data['username'])
+        self.assertEqual(self.user.email, updated_data['email'])
+        self.assertTrue(self.user.check_password(updated_data['password']))
+        self.assertEqual(self.user.contactInfo, updated_data['contactInfo'])
 
     def test_delete_user(self):
         user_id = self.user.id
@@ -159,3 +172,34 @@ class LogAdminTest(TestCase):
             self.log_admin.search_fields,
             ('path',)
         )
+
+
+class LoggingMiddlewareTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_logging_get_request(self):
+        response = self.client.get(reverse('signup'))
+        self.assertEqual(response.status_code, 405)
+
+        log = Log.objects.last()
+        self.assertIsNotNone(log)
+        self.assertEqual(log.path, reverse('signup'))
+        self.assertEqual(log.method, 'GET')
+        self.assertEqual(log.status_code, 405)
+
+    def test_logging_post_request(self):
+        response = self.client.post(reverse('signup'), data={
+            'username': 'testuser',
+            'password1': 'testpassword',
+            'password2': 'testpassword',
+            'email': 'testuser@example.com'
+        })
+        self.assertEqual(response.status_code, 201)  # User creation should return 201
+
+        log = Log.objects.last()
+        self.assertIsNotNone(log)
+        self.assertEqual(log.path, reverse('signup'))
+        self.assertEqual(log.method, 'POST')
+        self.assertEqual(log.status_code, 201)
