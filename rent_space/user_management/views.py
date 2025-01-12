@@ -75,6 +75,21 @@ class homeView(APIView):
         else:
             return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         
+    # @csrf_exempt
+    # @api_view(['POST'])
+    # def custom_login(request):
+    #     if request.method == 'POST':
+    #         username = request.data.get('username')
+    #         password = request.data.get('password')
+    #         user = authenticate(request, username=username, password=password)
+    #         if user is not None:
+    #             login(request, user)
+    #             return JsonResponse({'username': user.username, 'id': user.id}, status=200)
+    #         else:
+    #             return JsonResponse({'error': 'Invalid credentials'}, status=400)
+    #     else:
+    #         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
     @csrf_exempt
     @api_view(['POST'])
     def custom_login(request):
@@ -82,13 +97,22 @@ class homeView(APIView):
             username = request.data.get('username')
             password = request.data.get('password')
             user = authenticate(request, username=username, password=password)
+
             if user is not None:
                 login(request, user)
-                return JsonResponse({'username': user.username, 'id': user.id}, status=200)
+                # Include is_staff in the response
+                return JsonResponse({
+                    'username': user.username,
+                    'id': user.id,
+                    'is_staff': user.is_staff,  # Admin status
+                }, status=200)
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
         else:
             return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+
 
     @csrf_exempt
     @api_view(['POST'])
