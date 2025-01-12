@@ -62,6 +62,9 @@ class homeView(APIView):
             if password != confirm_password:
                 return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
 
+            if User.objects.filter(username=username).exists():
+                return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
             # Create the user object
             user = User.objects.create_user(username=username, email=email, password=password)
 
