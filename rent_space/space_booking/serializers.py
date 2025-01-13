@@ -12,10 +12,17 @@ class NotApprovedAdSpaceSerializer(serializers.ModelSerializer):
         fields = ['id', 'location', 'size', 'price', 'owner_id']
 
 
+
+
 class AdSpaceSerializer(serializers.ModelSerializer):
+    owner_email = serializers.SerializerMethodField()
+
     class Meta:
         model = AdSpace
-        fields = '__all__'
+        fields = '__all__'  # Keep all existing fields, and add owner_email automatically
+
+    def get_owner_email(self, obj):
+        return obj.owner.email if obj.owner else None
 
 
 class PaymentSerializer(serializers.ModelSerializer):
