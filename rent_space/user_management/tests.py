@@ -1,7 +1,4 @@
 from django.contrib.admin import AdminSite
-from django.test import TestCase
-
-# Create your tests here.
 from django.test import TestCase, Client
 from django.utils import timezone
 from .admin import LogAdmin
@@ -10,9 +7,8 @@ from django.urls import reverse
 from rest_framework import status
 from user_management.serializers import UserSerializer
 from rest_framework.test import APIClient
-import json
 
-# Create your tests here.
+
 class UserTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', email='test@example.com', password='password123')

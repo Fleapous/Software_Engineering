@@ -67,7 +67,7 @@ class AdSpaceListByOwner(generics.ListAPIView):
 class UpdateAdSpace(APIView):
     def patch(self, request, pk):
         adspace = get_object_or_404(AdSpace, pk=pk)
-        serializer = AdSpaceSerializer(adspace, data=request.data, partial=True)  # Allow partial updates
+        serializer = AdSpaceSerializer(adspace, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -81,9 +81,6 @@ class DeleteAdSpace(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class RatingList(generics.ListAPIView):
-#     queryset = Rating.objects.all()
-#     serializer_class = RatingSerializer
 
 class RatingList(APIView):
     def get(self, request):
@@ -104,9 +101,9 @@ class RatingList(APIView):
                 review = {
                     'title': rating.title,
                     'description': rating.description,
-                    'date': rating.date.strftime('%B %d, %Y'),  # Format date as desired
+                    'date': rating.date.strftime('%B %d, %Y'),
                     'rating': rating.rating,
-                    'name': rating.client.username  # Assuming 'client' is a ForeignKey to your custom User model
+                    'name': rating.client.username
                 }
                 ad_space_data['reviews'].append(review)
 

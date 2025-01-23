@@ -1,21 +1,14 @@
 from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
 from .models import User, Log
-
 from .serializers import UserSerializer, UserListSerializer, LogSerializer
-from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
-#from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout, authenticate, login
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 
-# class UserListCreate(generics.ListCreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
 
 class UserListCreate(APIView):
     def get(self, request):
@@ -32,20 +25,7 @@ class UserListCreate(APIView):
             return JsonResponse({'message': 'User deleted successfully'}, status=200)
         except User.DoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
-# from serializers import *
 
-
-# class homeView(APIView):
-# def get(selfself, request):
-#     output = [{"name": output.email, "email": output.email}
-#               for output in User.objects.all()]
-#     return Response(output)
-#
-# def post(self, request):
-#     serializer = UserSerializer(data=request.data)
-#     if serializer.is_valid(raise_exception=True):
-#         serializer.save()
-#         return Response(serializer.data)
 
 @csrf_exempt
 class homeView(APIView):
@@ -54,9 +34,8 @@ class homeView(APIView):
         if request.method == 'POST':
             username = request.data.get('username')
             password = request.data.get('password1')
-            confirm_password = request.data.get('password2')  # Assuming you have a field named 'confirm_password'
+            confirm_password = request.data.get('password2')
             email = request.data.get('email')
-            # Additional fields as per your User model
 
             # Check if password and confirm password match
             if password != confirm_password:
@@ -74,21 +53,6 @@ class homeView(APIView):
                 return Response({'error': 'Failed to create user'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        
-    # @csrf_exempt
-    # @api_view(['POST'])
-    # def custom_login(request):
-    #     if request.method == 'POST':
-    #         username = request.data.get('username')
-    #         password = request.data.get('password')
-    #         user = authenticate(request, username=username, password=password)
-    #         if user is not None:
-    #             login(request, user)
-    #             return JsonResponse({'username': user.username, 'id': user.id}, status=200)
-    #         else:
-    #             return JsonResponse({'error': 'Invalid credentials'}, status=400)
-    #     else:
-    #         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
     @csrf_exempt
     @api_view(['POST'])
@@ -100,18 +64,15 @@ class homeView(APIView):
 
             if user is not None:
                 login(request, user)
-                # Include is_staff in the response
                 return JsonResponse({
                     'username': user.username,
                     'id': user.id,
-                    'is_staff': user.is_staff,  # Admin status
+                    'is_staff': user.is_staff,
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
         else:
             return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-
 
 
     @csrf_exempt
@@ -140,8 +101,8 @@ class UpdateUser(APIView):
 
 class UserProfileView(APIView):
     def get(self, request):
-        username = request.query_params.get('username')  # Get username from query parameters
-        user = get_object_or_404(User, username=username)  # Fetch user based on username
+        username = request.query_params.get('username')
+        user = get_object_or_404(User, username=username)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 

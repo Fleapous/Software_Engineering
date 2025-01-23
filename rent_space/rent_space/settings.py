@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-8r!1400u4vu!#=@0=*&!um@r=z39f4ywovuvp9dto#^w+kswzn
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#i changed this to false to connect to the database
+
 ALLOWED_HOSTS = []
 #'find-your-space.database.windows.net'
 
@@ -58,10 +58,8 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'user_management.logging_middleware.LoggingMiddleware'
-    # 'django.contrib.auth.backends.ModelBackend',
 ]
 
-#REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': [rest_framework.permissions.AllowAny]}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -95,21 +93,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-#BIG PROBLEM FOR TOMORROW, GOODLUCK FUTURE TSITSI, YOURE GONNA NEED IT
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'mssql',
-#         'NAME': 'FindYourSpaceDatabase',
-#         'USER': 'space',
-#         'PASSWORD': '1q2w3e4r.',
-#         'HOST': 'find-your-space.database.windows.net',
-#         'PORT': '1433',
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 17 for SQL Server',
-#         },
-#     }
-# }
 
 USE_TZ = False
 

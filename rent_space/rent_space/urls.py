@@ -17,9 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-#from django.conf.urls import url
 from user_management.views import *
-#from user_management.views import custom_login, custom_logout
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,11 +26,8 @@ urlpatterns = [
     path('signup/', homeView.signup, name='signup'),
     path('api/login/', homeView.custom_login, name='login'),
     path('api/logout/', homeView.custom_logout, name='logout'),
-    # path('', homeView.as_view(), name="anything"),
     path('api/', include('space_booking.urls')),  # Include the URLs of your app
     path('logs/', LogListCreateView.as_view(), name='log-list-create'),
-
-    #adding new urls for testing
     path('users/', UserListCreate.as_view(), name='user-list-create'),
     path('update_user/<int:user_id>/', UpdateUser.as_view(), name='update_user'),
     path('profile/', UserProfileView.as_view(), name='profile'),

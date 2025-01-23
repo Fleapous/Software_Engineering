@@ -12,7 +12,6 @@ class LoggingMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         duration = time.time() - request.start_time
         if request.path.startswith('/admin'):
-            # Ignore admin paths if you don't want to log them
             return response
 
         Log.objects.create(

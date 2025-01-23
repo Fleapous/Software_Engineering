@@ -105,18 +105,6 @@ class AdSpaceAPITestCase(TestCase):
         self.assertIn('status', first_booking_data)
         self.assertEqual(first_booking_data['status'], True)
 
-    # def test_create_booking(self):
-    #     data = {
-    #         "client": 1,
-    #         "adSpace": 1,
-    #         "bookingDate": '2024-04-30T12:00:00',
-    #         "status": True
-    #     }
-    #     response = self.client.post('/new-booking/', data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     self.assertEqual(Booking.objects.count(), 1)
-    #     booking = Booking.objects.get()
-    #     self.assertEqual(booking.bookingDate, data['bookingDate'])
 
     def test_delete_booking(self):
         client = APIClient()
