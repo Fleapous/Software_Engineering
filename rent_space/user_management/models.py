@@ -5,13 +5,6 @@ class User(AbstractUser):
     contactInfo = models.CharField(max_length=100)
     groups = models.ManyToManyField('auth.Group', related_name='custom_user_groups')
     user_permissions = models.ManyToManyField('auth.Permission', related_name='custom_user_permissions')
-    # receivedPayments = models.ManyToManyField('Payment', related_name='received_payments')
-    # myPayments = models.ManyToManyField('Payment', related_name='my_payments')
-    # ratings = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    # spaces = models.ManyToManyField('AdSpace', related_name='user_spaces')
-    # bookings = models.ManyToManyField('Booking', related_name='Bookings')
-
-    # name, email, password (inherited from AbstractUser)
 
     def login(self):
         pass

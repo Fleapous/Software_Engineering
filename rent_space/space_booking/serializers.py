@@ -1,9 +1,7 @@
 # Create operation
 from rest_framework import serializers
-
-from .models import AdSpace
 from .models import AdSpace, Rating, Booking, Payment
-from user_management.serializers import UserSerializer  # Import the UserSerializer
+
 
 
 class NotApprovedAdSpaceSerializer(serializers.ModelSerializer):
@@ -19,7 +17,7 @@ class AdSpaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdSpace
-        fields = '__all__'  # Keep all existing fields, and add owner_email automatically
+        fields = '__all__'
 
     def get_owner_email(self, obj):
         return obj.owner.email if obj.owner else None

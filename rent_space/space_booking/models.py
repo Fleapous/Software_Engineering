@@ -35,7 +35,6 @@ class Booking(models.Model):
         pass
 
 
-# add title
 class Rating(models.Model):
     title = models.CharField(max_length=100)
     client = models.ForeignKey(User, on_delete=models.CASCADE)
